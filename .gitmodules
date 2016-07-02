@@ -1,0 +1,24 @@
+[submodule "projects/mbh-vanilla"]
+	path = projects/mbh-vanilla
+	url = https://github.com/meteorbuildpackhorse/mbh-vanilla.git
+[submodule "projects/mbh-android"]
+	path = projects/mbh-android
+	url = https://github.com/meteorbuildpackhorse/mbh-android.git
+[submodule "projects/mbh-betarelease"]
+	path = projects/mbh-betarelease
+	url = https://github.com/meteorbuildpackhorse/mbh-betarelease.git
+[submodule "projects/mbh-dynometadata"]
+	path = projects/mbh-dynometadata
+	url = https://github.com/meteorbuildpackhorse/mbh-dynometadata.git
+[submodule "projects/mbh-ironscaffold"]
+	path = projects/mbh-ironscaffold
+	url = https://github.com/meteorbuildpackhorse/mbh-ironscaffold.git
+[submodule "projects/mbh-subdir"]
+	path = projects/mbh-subdir
+	url = https://github.com/meteorbuildpackhorse/mbh-subdir.git
+[submodule "projects/mbh-old1.1.0.3"]
+	path = projects/mbh-old1.1.0.3
+	url = https://github.com/meteorbuildpackhorse/mbh-old1.1.0.3.git
+[submodule "projects/mbh-old1.2.1"]
+	path = projects/mbh-old1.2.1
+	url = https://github.com/meteorbuildpackhorse/mbh-old1.2.1.git
