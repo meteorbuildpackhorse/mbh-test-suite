@@ -4,6 +4,7 @@ import sys
 import subprocess
 from urllib.request import urlopen
 from http.client import BadStatusLine
+from urllib.error import HTTPError
 
 BASE = os.path.dirname(__file__)
 
@@ -18,7 +19,7 @@ def run_tests(test_projects):
         ], cwd=project_base)
         # Push to heroku.
         proc = subprocess.Popen(
-            ["git", "push", "heroku", "master"],
+            ["git", "push", "--force", "heroku", "master"],
             cwd=project_base,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
@@ -55,21 +56,20 @@ def run_tests(test_projects):
                 continue
             try:
                 res = urlopen(root_url)
-            except BadStatusLine:
+            except (BadStatusLine, HTTPError):
                 pass
-            with urlopen(root_url) as res:
-                print("GET {}".format(root_url))
-                if res.getcode() != 200:
-                    # Curl'ing page failed.
-                    errors.append({
-                        'name': test['name'],
-                        'stdout': '',
-                        'stderr': "Status code {} retrieving {}".format(
-                            res.getcode(),
-                            root_url
-                        ),
-                        'code': -1,
-                    })
+            print("GET {}: {}".format(root_url, res.getcode()))
+            if res.getcode() != 200:
+                # Curl'ing page failed.
+                errors.append({
+                    'name': test['name'],
+                    'stdout': '',
+                    'stderr': "Status code {} retrieving {}".format(
+                        res.getcode(),
+                        root_url
+                    ),
+                    'code': -1,
+                })
 
     if errors:
         for error in errors:
