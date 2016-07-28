@@ -56,16 +56,18 @@ def run_tests(test_projects):
                 continue
             try:
                 res = urlopen(root_url)
+                code = res.getcode()
             except (BadStatusLine, HTTPError):
-                pass
-            print("GET {}: {}".format(root_url, res.getcode()))
-            if res.getcode() != 200:
+                print("Status error!")
+                code = 500
+            print("GET {}: {}".format(root_url, code))
+            if code != 200:
                 # Curl'ing page failed.
                 errors.append({
                     'name': test['name'],
                     'stdout': '',
                     'stderr': "Status code {} retrieving {}".format(
-                        res.getcode(),
+                        code,
                         root_url
                     ),
                     'code': -1,
