@@ -10,32 +10,36 @@ BASE = os.path.dirname(__file__)
 
 def run_tests(test_projects):
     test_procs = []
+    errors = []
     for project in test_projects:
         project_base = os.path.join(BASE, "projects", project)
         # Create a commit so we can push.
-        print("{}:".format(project))
+        print("################################")
+        print("{}: {}".format(project, project_base))
+        print("checkout master")
+        subprocess.check_call(["git", "-C", project_base, "checkout", "master"])
+        print("add empty commit")
         subprocess.check_call([
-            "git", "commit", "--allow-empty", "-m", "Rebuild"
-        ], cwd=project_base)
+            "git", "-C", project_base, "commit", "--allow-empty", "-m", "Rebuild"
+        ])
         # Push to heroku.
+        print("Push to heroku")
         proc = subprocess.Popen(
-            ["git", "push", "--force", "heroku", "master"],
-            cwd=project_base,
+            ["git", "-C", project_base, "push", "--force", "heroku", "master"],
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stderr=subprocess.PIPE,
         )
         test_procs.append({
             'name': project,
             'proc': proc,
             'basedir': project_base
         })
+        test = test_procs[-1]
 
-    errors = []
-    for test in test_procs:
         # Wait for heroku build to finish.
         stdout, stderr = test['proc'].communicate()
         # Revert the commit.
-        subprocess.check_call(["git", "reset", "--hard", "HEAD~1"], cwd=test['basedir'])
+        subprocess.check_call(["git", "-C", test['basedir'], "reset", "--hard", "HEAD~1"])
         # Check the result.
         if test['proc'].returncode != 0:
             errors.append({
@@ -44,7 +48,10 @@ def run_tests(test_projects):
                 'stderr': stderr.decode('utf-8'),
                 'code': test['proc'].returncode
             })
+            print(errors[-1]['stderr'])
         else:
+            print(stdout.decode('utf-8'))
+            print(stderr.decode('utf-8'))
             # Build succeeded -- try curl'ing page.
             root_url = subprocess.check_output(
                 ["heroku", "config:get", "ROOT_URL"],
@@ -74,6 +81,7 @@ def run_tests(test_projects):
                 })
 
     if errors:
+        print("###############################################################")
         for error in errors:
             print("## {name} exited with status {code}:".format(**error))
             print("STDOUT:\n{stdout}".format(**error))
@@ -85,14 +93,19 @@ def run_tests(test_projects):
     sys.exit(len(errors))
 
 if __name__ == "__main__":
-    run_tests([
-        'mbh-android',
-        'mbh-betarelease',
-        'mbh-dynometadata',
-        'mbh-ironscaffold',
-        'mbh-subdir',
-        'mbh-old1.1.0.3',
-        'mbh-old1.2.1',
-        'mbh-vanilla'
-    ])
+    if len(sys.argv) > 1:
+        tests = sys.argv[1:]
+    else:
+        tests = [
+            'mbh-android',
+            #'mbh-betarelease', # release files no longer on meteor's servers
+            'mbh-dynometadata',
+            'mbh-ironscaffold',
+            'mbh-subdir',
+            'mbh-vanilla',
+            'mbh-old1.1.0.3',
+            'mbh-old1.2.1',
+            'mbh-1.4'
+        ]
+    run_tests(tests)
 
