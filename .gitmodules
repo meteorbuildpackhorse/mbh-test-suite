@@ -25,3 +25,6 @@
 [submodule "projects/mbh-1.4"]
 	path = projects/mbh-1.4
 	url = https://github.com/meteorbuildpackhorse/mbh-1.4.git
+[submodule "projects/mbh-old1.3.5"]
+	path = projects/mbh-old1.3.5
+	url = https://github.com/meteorbuildpackhorse/mbh-old1.3.5.git
